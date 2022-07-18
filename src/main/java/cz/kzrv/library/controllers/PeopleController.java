@@ -1,10 +1,9 @@
 package cz.kzrv.library.controllers;
 
-
-import cz.kzrv.library.dao.BookDao;
-import cz.kzrv.library.dao.PersonDao;
 import cz.kzrv.library.models.Book;
 import cz.kzrv.library.models.Person;
+import cz.kzrv.library.services.BookService;
+import cz.kzrv.library.services.PeopleService;
 import cz.kzrv.library.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,14 +18,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/people")
 public class PeopleController {
-    private final PersonDao personDao;
-    private final BookDao bookDao;
+    private final PeopleService personDao;
     private final Validation validation1;
 
     @Autowired
-    public PeopleController(PersonDao personDao, BookDao bookDao, Validation validation1) {
+    public PeopleController(PeopleService personDao, Validation validation1) {
         this.personDao = personDao;
-        this.bookDao = bookDao;
         this.validation1 = validation1;
     }
 
@@ -35,6 +32,7 @@ public class PeopleController {
         model.addAttribute("people",personDao.index());
         return "/people/index";
     }
+
     @GetMapping("new")
     public String newPerson(Model model){
         model.addAttribute("person",new Person());
@@ -43,7 +41,7 @@ public class PeopleController {
     @GetMapping("{id}")
     public String showPerson(Model model, @PathVariable("id") int id){
         model.addAttribute("person",personDao.show(id));
-        List<Book> list= bookDao.check(id);
+        List<Book> list= personDao.check(id);
         if(list.stream().count()>0) {
             model.addAttribute("list",list);
         }
